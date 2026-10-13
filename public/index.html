@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadSquared CRM & WhatsApp Automation Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex">
+
+    <!-- SIDEBAR (LeadSquared Deep Navy / Slate Style) -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800 min-h-screen sticky top-0 h-screen">
+        <div>
+            <!-- Brand / Logo -->
+            <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-800 bg-slate-950">
+                <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-white text-base tracking-wide flex items-center gap-1.5">
+                        Lead<span class="text-blue-400">Squared</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">CRM + WhatsApp Pro</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1 text-sm font-medium">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('leads')" id="nav-leads" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>Leads & Pipeline</span>
+                </button>
+                <button onclick="switchTab('whatsapp')" id="nav-whatsapp" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
+                    <span>WhatsApp Engine</span>
+                    <span id="nav-wa-badge" class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-slate-800 text-slate-400">Offline</span>
+                </button>
+                <button onclick="switchTab('campaigns')" id="nav-campaigns" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>Broadcast Campaigns</span>
+                </button>
+                <button onclick="switchTab('automations')" id="nav-automations" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="workflow" class="w-4 h-4"></i>
+                    <span>Automation Triggers</span>
+                </button>
+                <button onclick="switchTab('templates')" id="nav-templates" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span>Message Templates</span>
+                </button>
+                <button onclick="switchTab('compliance')" id="nav-compliance" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-sky-400"></i>
+                    <span>Compliance & Guard</span>
+                    <span id="nav-compliance-badge" class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-blue-950 text-blue-300 border border-blue-800">Protected</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- WhatsApp Quick Status Card in Sidebar -->
+        <div class="p-4 border-t border-slate-800 bg-slate-950/60">
+            <div id="sidebar-wa-card" class="p-3 rounded-lg border border-slate-800 bg-slate-900 text-xs">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-slate-400 font-medium">WhatsApp Sync</span>
+                    <span id="wa-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                </div>
+                <p id="sidebar-wa-text" class="font-semibold text-slate-200 truncate">Connecting...</p>
+                <button onclick="openWhatsAppModal()" class="mt-2.5 w-full py-1.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-medium text-xs flex items-center justify-center gap-1.5 transition-colors shadow">
+                    <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+                    <span id="sidebar-wa-btn-text">Manage Device</span>
+                </button>
+            </div>
+            <p class="text-[10px] text-slate-500 text-center mt-3 font-mono">100% Free & Self-Hosted</p>
+        </div>
+    </aside>
+
+    <!-- MAIN APP AREA -->
+    <div class="flex-1 flex flex-col min-w-0 min-h-screen">
+        <!-- TOP APP HEADER -->
+        <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20 shadow-xs">
+            <div class="flex items-center gap-4 flex-1 max-w-xl">
+                <div class="relative w-full">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Search leads by name, phone, company, or email..." class="w-full bg-slate-100 border-none rounded-lg pl-10 pr-4 py-2 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all placeholder:text-slate-400">
+                </div>
+            </div>
+
+            <!-- Top Right Action Controls -->
+            <div class="flex items-center gap-3">
+                <div id="top-status-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="top-status-text">WhatsApp: Checking...</span>
+                </div>
+
+                <button onclick="openAddLeadModal()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm shadow-blue-500/20 transition-all">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span>Add Lead</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- CONTENT CONTAINER -->
+        <main class="flex-1 p-8 overflow-y-auto">
+
+            <!-- ================= VIEW 1: DASHBOARD ================= -->
+            <div id="view-dashboard" class="view-content space-y-6">
+                <!-- Top Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Leads</span>
+                            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="users" class="w-4 h-4"></i></div>
+                        </div>
+                        <p id="dash-total-leads" class="text-2xl font-bold text-slate-900 mt-2">--</p>
+                        <p class="text-xs text-slate-500 mt-1">Active in CRM pipeline</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Deals Won</span>
+                            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="award" class="w-4 h-4"></i></div>
+                        </div>
+                        <p id="dash-won-leads" class="text-2xl font-bold text-emerald-600 mt-2">--</p>
+                        <p class="text-xs text-slate-500 mt-1">Converted customers</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Win Rate</span>
+                            <div class="p-2 bg-violet-50 text-violet-600 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4"></i></div>
+                        </div>
+                        <p id="dash-conversion-rate" class="text-2xl font-bold text-violet-600 mt-2">--%</p>
+                        <p class="text-xs text-slate-500 mt-1">Lead-to-deal conversion</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">WhatsApp Sent</span>
+                            <div class="p-2 bg-teal-50 text-teal-600 rounded-lg"><i data-lucide="send" class="w-4 h-4"></i></div>
+                        </div>
+                        <p id="dash-wa-sent" class="text-2xl font-bold text-teal-600 mt-2">--</p>
+                        <p class="text-xs text-slate-500 mt-1">Automated & direct</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Replies Received</span>
+                            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg"><i data-lucide="message-circle" class="w-4 h-4"></i></div>
+                        </div>
+                        <p id="dash-wa-received" class="text-2xl font-bold text-indigo-600 mt-2">--</p>
+                        <p class="text-xs text-slate-500 mt-1">Incoming lead messages</p>
+                    </div>
+                </div>
+
+                <!-- Pipeline Stages Breakdown & Funnel -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
+                    <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">
+                        <span>Lead Pipeline Distribution</span>
+                        <span class="text-xs text-slate-500 font-normal">LeadSquared Sales Stages</span>
+                    </h2>
+                    <div id="dash-stages-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Recent Activity Timeline & Quick WhatsApp Action -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Activities Stream -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="activity" class="w-4 h-4 text-blue-600"></i>
+                                <span>Recent CRM & WhatsApp Activity</span>
+                            </h2>
+                            <button onclick="loadDashboard()" class="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Refresh
+                            </button>
+                        </div>
+                        <div id="dash-activities-list" class="space-y-3">
+                            <p class="text-slate-400 text-sm">Loading activity stream...</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick WhatsApp Blast Card -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-2 text-emerald-600 font-bold mb-2">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                <span class="text-slate-900 font-bold text-base">Quick WhatsApp Actions</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-4">Automate outreach directly using smart templates with zero API cost.</p>
+                            
+                            <div class="space-y-3">
+                                <button onclick="switchTab('campaigns')" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all flex items-center justify-between group">
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-600">Start Broadcast</h4>
+                                        <p class="text-xs text-slate-500">Send WhatsApp campaign by stage</p>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-600"></i>
+                                </button>
+                                
+                                <button onclick="switchTab('automations')" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all flex items-center justify-between group">
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800 group-hover:text-blue-600">Configure Auto-Reply</h4>
+                                        <p class="text-xs text-slate-500">Welcome messages & triggers</p>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-600"></i>
+                                </button>
+
+                                <button onclick="openWhatsAppModal()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all flex items-center justify-between group">
+                                    <div>
+                                        <h4 class="font-bold text-sm text-slate-800 group-hover:text-emerald-600">Device Pairing QR</h4>
+                                        <p class="text-xs text-slate-500">Scan or re-link phone session</p>
+                                    </div>
+                                    <i data-lucide="qr-code" class="w-4 h-4 text-slate-400 group-hover:text-emerald-600"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                            <span>Engine: whatsapp-web.js</span>
+                            <span class="font-mono text-emerald-600 font-semibold">Active Engine</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 2: LEADS & PIPELINE ================= -->
+            <div id="view-leads" class="view-content hidden space-y-6">
+                <!-- Header with Action Bar -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Manage Leads & Pipeline</h2>
+                        <p class="text-xs text-slate-500">Track, qualify, and message leads across your sales funnel.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="document.getElementById('csv-file-input').click()" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg shadow-2xs transition-all">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                            <span>Import CSV</span>
+                        </button>
+                        <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCsvUpload(this)">
+
+                        <button onclick="exportLeadsCsv()" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg shadow-2xs transition-all" title="Export all leads to Excel / CSV format">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Export Excel / CSV</span>
+                        </button>
+
+                        <button onclick="clearAllLeads()" class="flex items-center gap-1.5 px-3 py-2 bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold rounded-lg shadow-2xs transition-all" title="Delete all leads from database">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Clear All Leads</span>
+                        </button>
+
+                        <button onclick="openAddLeadModal()" class="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm shadow-blue-500/20 transition-all">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>New Lead</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stage Filter Tabs (LeadSquared Pipeline stages) -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="flex border-b border-slate-200 px-4 pt-3 overflow-x-auto gap-2" id="lead-stage-tabs">
+                        <button onclick="filterByStage('ALL')" class="stage-tab active px-4 py-2.5 text-xs font-bold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap" data-stage="ALL">All Leads (<span id="count-all">0</span>)</button>
+                        <button onclick="filterByStage('New')" class="stage-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent whitespace-nowrap" data-stage="New">New (<span id="count-new">0</span>)</button>
+                        <button onclick="filterByStage('Contacted')" class="stage-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent whitespace-nowrap" data-stage="Contacted">Contacted (<span id="count-contacted">0</span>)</button>
+                        <button onclick="filterByStage('Qualified')" class="stage-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent whitespace-nowrap" data-stage="Qualified">Qualified (<span id="count-qualified">0</span>)</button>
+                        <button onclick="filterByStage('Proposal Sent')" class="stage-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent whitespace-nowrap" data-stage="Proposal Sent">Proposal Sent (<span id="count-proposal">0</span>)</button>
+                        <button onclick="filterByStage('Won')" class="stage-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent whitespace-nowrap" data-stage="Won">Closed Won (<span id="count-won">0</span>)</button>
+                        <button onclick="filterByStage('Lost')" class="stage-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-800 border-b-2 border-transparent whitespace-nowrap" data-stage="Lost">Lost (<span id="count-lost">0</span>)</button>
+                    </div>
+
+                    <!-- Search and Secondary Filters Bar -->
+                    <div class="p-4 bg-slate-50/50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 flex-1 min-w-[280px]">
+                            <div class="relative w-full max-w-sm">
+                                <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="leads-search-input" oninput="debounceLeadsSearch(this.value)" placeholder="Search in this view..." class="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+
+                            <select id="leads-priority-filter" onchange="loadLeads()" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="ALL">All Priorities</option>
+                                <option value="High">High Priority</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+
+                            <select id="leads-source-filter" onchange="loadLeads()" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="ALL">All Sources</option>
+                                <option value="Website">Website</option>
+                                <option value="WhatsApp">WhatsApp</option>
+                                <option value="Referral">Referral</option>
+                                <option value="Ad Campaign">Ad Campaign</option>
+                            </select>
+                        </div>
+
+                        <div class="text-xs text-slate-500 font-medium">
+                            Showing <span id="leads-visible-count" class="font-bold text-slate-800">0</span> leads
+                        </div>
+                    </div>
+
+                    <!-- Leads Data Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100/75 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
+                                    <th class="py-3 px-4">Lead Name</th>
+                                    <th class="py-3 px-4">Company</th>
+                                    <th class="py-3 px-4">Phone (WhatsApp)</th>
+                                    <th class="py-3 px-4">WA Compliance</th>
+                                    <th class="py-3 px-4">Stage</th>
+                                    <th class="py-3 px-4">Score</th>
+                                    <th class="py-3 px-4">Priority</th>
+                                    <th class="py-3 px-4">Source</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leads-table-body" class="divide-y divide-slate-100">
+                                <tr>
+                                    <td colspan="9" class="text-center py-8 text-slate-400">Loading leads...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 3: WHATSAPP ENGINE ================= -->
+            <div id="view-whatsapp" class="view-content hidden space-y-6">
+                <!-- WhatsApp Dispatch Engine Architecture Switcher -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="cpu" class="w-5 h-5 text-emerald-600"></i>
+                                <span>WhatsApp Dispatch Engines</span>
+                            </h3>
+                            <p class="text-xs text-slate-500">Switch seamlessly between Built-in Web, Self-Hosted OpenWA Gateway, or Official Meta Cloud API.</p>
+                        </div>
+                        <div id="active-engine-pill" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 w-fit">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Engine: <b id="active-engine-name">Built-in Web Engine</b></span>
+                        </div>
+                    </div>
+
+                    <!-- Engine Choice Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                        <!-- Option 1: Built-in Web -->
+                        <div onclick="selectEngineTab('builtin')" id="card-engine-builtin" class="p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50/40 cursor-pointer transition-all hover:shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                                        <i data-lucide="qr-code" class="w-4 h-4 text-emerald-600"></i> Built-in Web
+                                    </span>
+                                    <span id="badge-builtin-status" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">ACTIVE</span>
+                                </div>
+                                <p class="text-xs text-slate-600">Headless browser session via QR pairing. 100% free, runs locally in this app with zero external servers.</p>
+                            </div>
+                            <div class="mt-3 text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                                <span>Zero-Setup Default</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 2: OpenWA API Gateway -->
+                        <div onclick="selectEngineTab('openwa')" id="card-engine-openwa" class="p-4 rounded-xl border-2 border-slate-200 hover:border-blue-400 bg-white cursor-pointer transition-all hover:shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                                        <i data-lucide="server" class="w-4 h-4 text-blue-600"></i> OpenWA Gateway
+                                    </span>
+                                    <span id="badge-openwa-status" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">STANDBY</span>
+                                </div>
+                                <p class="text-xs text-slate-600">Self-hosted OpenWA API (rmyndharis/OpenWA). High-speed REST endpoints, webhooks, multi-session gateway.</p>
+                            </div>
+                            <div class="mt-3 text-[11px] text-blue-600 font-semibold flex items-center gap-1">
+                                <span>Configure REST Gateway &rarr;</span>
+                            </div>
+                        </div>
+
+                        <!-- Option 3: Meta Cloud API -->
+                        <div onclick="selectEngineTab('cloudapi')" id="card-engine-cloudapi" class="p-4 rounded-xl border-2 border-slate-200 hover:border-purple-400 bg-white cursor-pointer transition-all hover:shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                                        <i data-lucide="cloud" class="w-4 h-4 text-purple-600"></i> Meta Cloud API
+                                    </span>
+                                    <span id="badge-cloud-status" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">STANDBY</span>
+                                </div>
+                                <p class="text-xs text-slate-600">Official Meta WhatsApp Business Cloud API. Zero ban risk, verified business sender, official templates.</p>
+                            </div>
+                            <div class="mt-3 text-[11px] text-purple-600 font-semibold flex items-center gap-1">
+                                <span>Configure Cloud API &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Config Panel: OpenWA Gateway -->
+                    <div id="panel-engine-openwa" class="hidden p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                                    <i data-lucide="server" class="w-4 h-4 text-blue-600"></i>
+                                    <span>OpenWA Gateway Configuration (rmyndharis/OpenWA)</span>
+                                </h4>
+                                <p class="text-xs text-slate-500">Self-host locally or on a VPS to send messages through the OpenWA REST API Gateway.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="openwa-enabled-toggle" onchange="toggleOpenWAEngine(this.checked)" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                                <span class="text-xs font-bold text-slate-800">Use OpenWA for Outgoing</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Server API Base URL</label>
+                                <input type="text" id="openwa-server-url" value="http://localhost:2785/api" placeholder="http://localhost:2785/api" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono">
+                                <span class="text-[10px] text-slate-400">Default OpenWA port: 2785</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">API Key (Optional / X-API-Key)</label>
+                                <input type="password" id="openwa-api-key" placeholder="Enter API Key if configured" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono">
+                                <span class="text-[10px] text-slate-400">Leave blank if no key required</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Session ID</label>
+                                <input type="text" id="openwa-session-id" value="default" placeholder="default" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono">
+                                <span class="text-[10px] text-slate-400">Default session name in OpenWA</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <button onclick="testOpenWAConnection()" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all">
+                                    <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-600"></i>
+                                    <span>Test OpenWA Gateway</span>
+                                </button>
+                                <button onclick="startOpenWASession()" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all">
+                                    <i data-lucide="qr-code" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    <span>Link Phone / Show QR</span>
+                                </button>
+                                <button onclick="saveOpenWAConfig()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                    <span>Save OpenWA Settings</span>
+                                </button>
+                            </div>
+                            <div class="text-[11px] text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-1.5">
+                                <i data-lucide="terminal" class="w-3.5 h-3.5 text-blue-600"></i>
+                                <span>Self-Host: Run <code class="font-bold text-blue-700">setup_openwa.bat</code> or <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-700">npm run start</code> in OpenWA dir.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Config Panel: Meta Cloud API -->
+                    <div id="panel-engine-cloudapi" class="hidden p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                                    <i data-lucide="cloud" class="w-4 h-4 text-purple-600"></i>
+                                    <span>Meta WhatsApp Cloud API Configuration</span>
+                                </h4>
+                                <p class="text-xs text-slate-500">Official Meta Graph API credentials for verified WhatsApp Business messaging.</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="cloudapi-enabled-toggle" onchange="toggleCloudAPIEngine(this.checked)" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                                </label>
+                                <span class="text-xs font-bold text-slate-800">Use Cloud API for Outgoing</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number ID</label>
+                                <input type="text" id="cloud-phone-number-id" placeholder="e.g. 1048572918234" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Permanent Access Token</label>
+                                <input type="password" id="cloud-access-token" placeholder="EAAB..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Business Account ID (WABA)</label>
+                                <input type="text" id="cloud-business-account-id" placeholder="e.g. 192837465019" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-purple-500 focus:outline-none font-mono">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <button onclick="testCloudAPIConnection()" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all">
+                                    <i data-lucide="activity" class="w-3.5 h-3.5 text-purple-600"></i>
+                                    <span>Test Cloud API</span>
+                                </button>
+                                <button onclick="saveCloudAPIConfig()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                    <span>Save Cloud API Settings</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Device Status Header -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                            <i data-lucide="message-square" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-lg font-bold text-slate-900">WhatsApp Web Engine Status</h2>
+                                <span id="wa-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Checking...</span>
+                            </div>
+                            <p id="wa-device-detail" class="text-xs text-slate-500 mt-1">Connecting to local session...</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="reconnectWhatsApp()" id="btn-reconnect-wa" class="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                            <span>Scan QR / Link Device</span>
+                        </button>
+                        <button onclick="disconnectWhatsApp()" id="btn-disconnect-wa" class="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold transition-all">
+                            <i data-lucide="power" class="w-3.5 h-3.5"></i>
+                            <span>Disconnect</span>
+                        </button>
+                        <button onclick="resetWhatsAppSession()" id="btn-reset-wa" class="flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-all" title="Clear saved credentials to link a brand new WhatsApp number">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Reset / Switch Number</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- QR Code & Direct Chat Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Device Linking Card (QR Code or 8-Digit Pairing Code) -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <!-- Tabs: Scan QR Code vs Link with Phone Number -->
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                                <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                                    <button type="button" id="tab-btn-qr" onclick="switchPairingTab('qr')" class="px-3 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-slate-800 shadow-xs">
+                                        <i data-lucide="qr-code" class="w-3.5 h-3.5 inline mr-1 text-emerald-600"></i> Scan QR Code
+                                    </button>
+                                    <button type="button" id="tab-btn-phone" onclick="switchPairingTab('phone')" class="px-3 py-1.5 rounded-md text-xs font-medium text-slate-500 hover:text-slate-800 transition-all">
+                                        <i data-lucide="smartphone" class="w-3.5 h-3.5 inline mr-1 text-blue-600"></i> Link with Phone Number
+                                    </button>
+                                </div>
+                                <button type="button" onclick="refreshPairingState()" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 transition-colors" title="Refresh QR code or status">
+                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                    <span>Refresh</span>
+                                </button>
+                            </div>
+
+                            <!-- Panel 1: QR Code -->
+                            <div id="pairing-panel-qr" class="flex flex-col items-center justify-center text-center">
+                                <h3 class="text-base font-bold text-slate-900 mb-1">Scan WhatsApp QR Code</h3>
+                                <p class="text-xs text-slate-500 max-w-sm mb-4">Open WhatsApp on your mobile phone &gt; Settings/Menu &gt; <b>Linked Devices</b> &gt; <b>Link a Device</b> &gt; Point camera at this QR code.</p>
+                                
+                                <div id="wa-qr-container" class="w-64 h-64 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center p-4 bg-slate-50">
+                                    <i data-lucide="qr-code" class="w-12 h-12 text-slate-300 mb-2"></i>
+                                    <span class="text-xs text-slate-400">Waiting for connection...</span>
+                                </div>
+
+                                <p class="text-[11px] text-slate-400 mt-4 flex items-center gap-1">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i>
+                                    QR refreshes automatically. Saved in session memory.
+                                </p>
+                            </div>
+
+                            <!-- Panel 2: Link with Phone Number (8-digit code) -->
+                            <div id="pairing-panel-phone" class="hidden space-y-4">
+                                <div class="text-center max-w-md mx-auto">
+                                    <h3 class="text-base font-bold text-slate-900 mb-1">Link with Phone Number (No Camera Needed)</h3>
+                                    <p class="text-xs text-slate-500">Get an official 8-digit pairing code and enter it directly in WhatsApp on your phone.</p>
+                                </div>
+
+                                <div class="bg-blue-50/60 border border-blue-100 rounded-xl p-4 space-y-3">
+                                    <label class="block text-xs font-bold text-slate-800">Enter Your WhatsApp Phone Number (with Country Code):</label>
+                                    <div class="flex items-center gap-2">
+                                        <div class="relative flex-1">
+                                            <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                            <input type="text" id="pairing-phone-input" placeholder="e.g. 919876543210" class="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                        </div>
+                                        <button type="button" id="btn-request-pairing-code" onclick="requestPhonePairingCode()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs whitespace-nowrap">
+                                            <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                                            <span>Get 8-Digit Code</span>
+                                        </button>
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 block">Include country code without '+' or spaces (e.g. India: 919876543210).</span>
+                                </div>
+
+                                <!-- Display Pairing Code Box -->
+                                <div id="pairing-code-display-box" class="hidden p-5 rounded-xl bg-slate-900 text-white text-center space-y-3">
+                                    <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Your WhatsApp Pairing Code</span>
+                                    <div id="pairing-code-digits" class="text-3xl font-mono font-extrabold tracking-widest text-emerald-400 py-1">
+                                        --------
+                                    </div>
+                                    <div class="text-xs text-slate-300 max-w-sm mx-auto space-y-1 text-left bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                                        <p class="font-bold text-white flex items-center gap-1.5">
+                                            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-blue-400"></i> Steps on your mobile phone:
+                                        </p>
+                                        <p>1. Open WhatsApp &gt; <b>Linked Devices</b></p>
+                                        <p>2. Tap <b>Link a device</b></p>
+                                        <p>3. At the bottom, tap <b>"Link with phone number instead"</b></p>
+                                        <p>4. Type the 8-character code shown above</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Troubleshooting Callout for "Could not link device try again later" -->
+                        <div class="mt-6 pt-4 border-t border-slate-100 bg-amber-50/60 rounded-xl p-3.5 border border-amber-200/80 text-left">
+                            <div class="flex items-start gap-2.5">
+                                <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 mt-0.5 shrink-0"></i>
+                                <div class="text-xs text-slate-700 space-y-1">
+                                    <p class="font-bold text-amber-900">Seeing "Could not link device, try again later"?</p>
+                                    <ul class="list-disc list-inside space-y-0.5 text-[11px] text-slate-600">
+                                        <li><b>Remove old devices:</b> On your phone &gt; WhatsApp &gt; <b>Linked Devices</b>, tap and log out of any old Google Chrome/Windows links. WhatsApp limits companion sessions to 4.</li>
+                                        <li><b>Cooldown after bulk send:</b> If your number had a temporary restriction or ban earlier today, WhatsApp's servers enforce a 12–24h security hold on new companion pairings.</li>
+                                        <li><b>Use 8-Digit Code:</b> Switch to the <b>"Link with Phone Number"</b> tab above to link via pairing code.</li>
+                                    </ul>
+                                    <div class="pt-3 flex items-center justify-between border-t border-amber-200/60 mt-2">
+                                        <span class="text-[11px] text-amber-900 font-semibold">QR stuck or browser unresponsive?</span>
+                                        <button type="button" onclick="forceResetWhatsAppSession()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5">
+                                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                            <span>Reset Session & Clear Browser Locks</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct Instant WhatsApp Message Console -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 mb-1">Instant WhatsApp Sender</h3>
+                            <p class="text-xs text-slate-500 mb-4">Test sending an instant message or template directly to any number.</p>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Phone Number (with Country Code)</label>
+                                    <div class="relative">
+                                        <i data-lucide="phone" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                        <input type="text" id="direct-wa-phone" placeholder="e.g. 919876543210 or +91 98765 43210" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">Default country code: 91 (India) if 10 digits entered.</span>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Quick Template</label>
+                                    <select id="direct-wa-template-select" onchange="applyDirectTemplate(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                        <option value="">-- Choose a Saved Template (Optional) --</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Message Body / Caption</label>
+                                    <textarea id="direct-wa-message" rows="3" placeholder="Type your WhatsApp message or video caption..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Attach Media (Image or Video - Optional)</label>
+                                    <input type="file" id="direct-wa-media-input" accept="image/*,video/mp4,video/*" class="hidden" onchange="handleMediaUpload(this, 'direct')">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <button type="button" onclick="triggerMediaPicker('direct', 'image')" class="px-3 py-1.5 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
+                                            <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
+                                            <span>Attach Image</span>
+                                        </button>
+                                        <button type="button" onclick="triggerMediaPicker('direct', 'video')" class="px-3 py-1.5 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
+                                            <i data-lucide="video" class="w-4 h-4 text-emerald-600"></i>
+                                            <span>Attach Video</span>
+                                        </button>
+                                        <div id="direct-media-preview" class="hidden flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200">
+                                            <i id="direct-media-icon" data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+                                            <span id="direct-media-name" class="font-medium truncate max-w-[150px]">media</span>
+                                            <button type="button" onclick="clearMedia('direct')" class="text-rose-500 hover:text-rose-700 font-bold ml-1">&times;</button>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1">Images or videos will be sent directly to WhatsApp with your text message as caption.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="sendDirectWhatsApp()" class="mt-4 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow transition-all">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Send WhatsApp Message</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Logs Table -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="list" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Live WhatsApp Transmission History</span>
+                        </h3>
+                        <button onclick="loadWhatsAppLogs()" class="text-xs text-blue-600 font-semibold flex items-center gap-1 hover:underline">
+                            <i data-lucide="rotate-cw" class="w-3 h-3"></i> Refresh Logs
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="py-2.5 px-4">Time</th>
+                                    <th class="py-2.5 px-4">Direction</th>
+                                    <th class="py-2.5 px-4">Lead / Phone</th>
+                                    <th class="py-2.5 px-4">Message</th>
+                                    <th class="py-2.5 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wa-logs-tbody" class="divide-y divide-slate-100">
+                                <tr><td colspan="5" class="text-center py-6 text-slate-400">Loading logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 4: BROADCAST CAMPAIGNS ================= -->
+            <div id="view-campaigns" class="view-content hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">WhatsApp Broadcast Campaigns</h2>
+                        <p class="text-xs text-slate-500">Run personalized bulk WhatsApp broadcasts with smart anti-ban pacing.</p>
+                    </div>
+                </div>
+
+                <!-- Campaign Launcher Form -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs">
+                    <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="send" class="w-5 h-5 text-blue-600"></i>
+                        <span>Create & Launch Broadcast</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Campaign Name</label>
+                            <input type="text" id="camp-name" placeholder="e.g. October Product Launch" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Target Audience (Stage)</label>
+                            <select id="camp-stage-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="ALL">All Leads with Phone</option>
+                                <option value="New">Stage: New</option>
+                                <option value="Contacted">Stage: Contacted</option>
+                                <option value="Qualified">Stage: Qualified</option>
+                                <option value="Proposal Sent">Stage: Proposal Sent</option>
+                                <option value="Won">Stage: Closed Won</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5">Select Message Template</label>
+                            <select id="camp-template-select" onchange="previewCampaignTemplate(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <option value="">-- Custom Message (No Template) --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-bold text-slate-700">Message Content</label>
+                            <div class="flex items-center gap-1.5 text-[11px] text-blue-600">
+                                <span>Variables:</span>
+                                <button type="button" onclick="insertVariable('camp-custom-msg', '{{first_name}}')" class="bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded font-mono text-[10px]">{{first_name}}</button>
+                                <button type="button" onclick="insertVariable('camp-custom-msg', '{{company}}')" class="bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded font-mono text-[10px]">{{company}}</button>
+                                <button type="button" onclick="insertVariable('camp-custom-msg', '{{phone}}')" class="bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded font-mono text-[10px]">{{phone}}</button>
+                            </div>
+                        </div>
+                        <textarea id="camp-custom-msg" rows="4" placeholder="Hello {{first_name}}, we have a special update for {{company}}..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Attach Media to Broadcast (Image or Video - Optional)</label>
+                        <input type="file" id="camp-media-input" accept="image/*,video/mp4,video/*" class="hidden" onchange="handleMediaUpload(this, 'camp')">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" onclick="triggerMediaPicker('camp', 'image')" class="px-3 py-1.5 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
+                                <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
+                                <span>Attach Broadcast Image</span>
+                            </button>
+                            <button type="button" onclick="triggerMediaPicker('camp', 'video')" class="px-3 py-1.5 border border-dashed border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 transition-colors">
+                                <i data-lucide="video" class="w-4 h-4 text-purple-600"></i>
+                                <span>Attach Broadcast Video</span>
+                            </button>
+                            <div id="camp-media-preview" class="hidden flex items-center gap-2 text-xs bg-blue-50 text-blue-800 px-3 py-1.5 rounded-lg border border-blue-200">
+                                <i id="camp-media-icon" data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+                                <span id="camp-media-name" class="font-medium truncate max-w-[200px]">media</span>
+                                <button type="button" onclick="clearMedia('camp')" class="text-rose-500 hover:text-rose-700 font-bold ml-1">&times;</button>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Every recipient will receive the attached image or video with your personalized message as caption!</p>
+                    </div>
+
+                    <!-- Auto-Appended WhatsApp Compliance Guard Footer Notice -->
+                    <div class="mt-3 p-3 bg-sky-50/80 border border-sky-200 rounded-xl flex items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center gap-2 text-sky-900">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-sky-600 shrink-0"></i>
+                            <div>
+                                <span class="font-bold">WhatsApp Compliance & Messaging Guard Active:</span>
+                                <span class="text-sky-800 ml-1">Automatically appends mandatory opt-out footer (<code class="bg-white px-1.5 py-0.5 rounded border border-sky-200 font-mono text-[11px]" id="camp-footer-preview-code">Reply STOP to unsubscribe.</code>), verifies suppression list, and logs every dispatch in the Audit Trail.</span>
+                            </div>
+                        </div>
+                        <button type="button" onclick="switchTab('compliance'); switchComplianceSubTab('settings')" class="text-[11px] font-bold text-sky-700 hover:underline whitespace-nowrap">Configure Footer &rarr;</button>
+                    </div>
+
+                    <!-- Anti-Ban Delay Pacing & Batching Shield -->
+                    <div class="mt-4 p-4 bg-emerald-50/60 border border-emerald-200 rounded-xl space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div class="flex items-center gap-2 text-xs text-emerald-900 font-bold">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                                <span>Anti-Ban Protection & Batching Shield (Human Simulation)</span>
+                            </div>
+                            <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Prevents WhatsApp Bulk Restrictions</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600">WhatsApp restricts numbers that send continuous non-stop messages. Batching splits your campaign into groups of <span class="font-bold">X leads</span> with a rest gap of <span class="font-bold">N minutes</span> in between (e.g. send 25 people &rarr; pause 10 mins &rarr; send next 25), mimicking natural human messaging patterns.</p>
+                        
+                        <!-- Batching Configuration -->
+                        <div class="p-3 bg-white/80 rounded-lg border border-emerald-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Batch Size (X Leads)</label>
+                                <select id="camp-batch-size-select" onchange="toggleBatchCustomInputs(this.value)" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="15">15 leads per batch (Ultra Safe)</option>
+                                    <option value="25" selected>25 leads per batch (Recommended)</option>
+                                    <option value="50">50 leads per batch (Established)</option>
+                                    <option value="100">100 leads per batch (High Volume)</option>
+                                    <option value="custom">Custom Batch Size</option>
+                                    <option value="0">Continuous (No batch pauses)</option>
+                                </select>
+                            </div>
+                            <div id="custom-batch-size-box" class="hidden">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Custom Leads per Batch</label>
+                                <input type="number" id="camp-custom-batch-size" value="25" min="1" max="500" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Batch Gap (N Minutes Pause)</label>
+                                <select id="camp-batch-delay-select" onchange="toggleBatchDelayCustomInputs(this.value)" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="5">5 minutes gap</option>
+                                    <option value="10" selected>10 minutes gap (Recommended)</option>
+                                    <option value="15">15 minutes gap (Safest)</option>
+                                    <option value="30">30 minutes gap</option>
+                                    <option value="custom">Custom Minutes Gap</option>
+                                </select>
+                            </div>
+                            <div id="custom-batch-delay-box" class="hidden">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Custom Gap (Minutes)</label>
+                                <input type="number" id="camp-custom-batch-delay" value="10" min="1" max="180" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <!-- In-Batch Message Pacing -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Interval Between Messages (Within Batch)</label>
+                                <select id="camp-pacing-mode" onchange="togglePacingCustomInputs(this.value)" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="safe" selected>Human: 1 - 2 mins delay (Safest)</option>
+                                    <option value="moderate">Balanced: 30 - 60s delay (2x faster)</option>
+                                    <option value="fast">Fast: 15 - 30s delay (4x faster)</option>
+                                    <option value="turbo">Turbo: 5 - 12s delay (High Speed)</option>
+                                    <option value="ultra">Ultra-Safe: 2 - 4 mins delay</option>
+                                    <option value="custom">Custom Delay Range (seconds)</option>
+                                </select>
+                            </div>
+                            <div id="custom-min-delay-box" class="hidden">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Min Delay (seconds)</label>
+                                <input type="number" id="camp-min-delay" value="60" min="5" max="600" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div id="custom-max-delay-box" class="hidden">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-1">Max Delay (seconds)</label>
+                                <input type="number" id="camp-max-delay" value="120" min="10" max="1200" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex items-center justify-end gap-3">
+                        <button type="button" onclick="runCampaignPreflightInspection()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-lg text-xs font-bold flex items-center gap-2 transition-all">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-sky-600"></i>
+                            <span>Run Preflight Inspection</span>
+                        </button>
+                        <button onclick="launchBroadcastCampaign()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            <span>Start Broadcast Campaign</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Past Campaigns History -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="p-4 border-b border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900">Campaign History</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="py-2.5 px-4">Campaign Name</th>
+                                    <th class="py-2.5 px-4">Target Stage</th>
+                                    <th class="py-2.5 px-4">Template</th>
+                                    <th class="py-2.5 px-4">Total Leads</th>
+                                    <th class="py-2.5 px-4">Progress / Sent</th>
+                                    <th class="py-2.5 px-4">Status</th>
+                                    <th class="py-2.5 px-4">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campaigns-tbody" class="divide-y divide-slate-100">
+                                <tr><td colspan="7" class="text-center py-6 text-slate-400">Loading campaign history...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VIEW 5: AUTOMATION WORKFLOWS ================= -->
+            <div id="view-automations" class="view-content hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">LeadSquared Automation Workflows</h2>
+                        <p class="text-xs text-slate-500">Trigger automatic WhatsApp sequences based on lead capture and stage transitions.</p>
+                    </div>
+                    <button onclick="openAddAutomationModal()" class="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>New Workflow Rule</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="automations-grid">
+                    <!-- Dynamic rules populated by JS -->
+                </div>
+            </div>
+
+            <!-- ================= VIEW 6: MESSAGE TEMPLATES ================= -->
+            <div id="view-templates" class="view-content hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">WhatsApp Message Templates</h2>
+                        <p class="text-xs text-slate-500">Reusable message templates with dynamic merge tags.</p>
+                    </div>
+                    <button onclick="openAddTemplateModal()" class="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>New Template</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="templates-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- ================= VIEW 7: COMPLIANCE & MESSAGING GUARD ================= -->
+            <div id="view-compliance" class="view-content hidden space-y-6">
+                <!-- Header Banner -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 font-bold">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                    <span>WhatsApp Compliance & Messaging Guard</span>
+                                    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">Live Active</span>
+                                </h2>
+                                <p class="text-xs text-slate-500">Tenant-isolated affirmative consent, instant STOP suppression, and immutable audit logs.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <!-- Tenant and Role Switcher for RBAC Testing & Administration -->
+                        <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
+                            <span class="text-slate-500 font-semibold px-1.5">Role:</span>
+                            <select id="comp-role-select" onchange="changeComplianceRole(this.value)" class="bg-white border border-slate-200 rounded px-2 py-1 text-xs font-bold text-slate-800 focus:outline-none">
+                                <option value="ADMIN" selected>ADMIN</option>
+                                <option value="COMPLIANCE_OFFICER">COMPLIANCE_OFFICER</option>
+                                <option value="AGENT">AGENT</option>
+                                <option value="VIEWER">VIEWER</option>
+                            </select>
+                        </div>
+
+                        <button onclick="openCaptureConsentModal()" class="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                            <span>Capture Consent</span>
+                        </button>
+                        <button onclick="openAddSuppressionModal()" class="flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                            <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
+                            <span>Add Suppression</span>
+                        </button>
+                        <button onclick="exportAuditLogsCsv()" class="flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 rounded-lg text-xs font-bold transition-all shadow-xs">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Export CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500">Active Consents</span>
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-900 mt-2" id="comp-kpi-consents">0</h3>
+                        <p class="text-[11px] text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                            <i data-lucide="shield" class="w-3 h-3"></i> Explicit affirmative opt-ins
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500">Suppressed Contacts</span>
+                            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                                <i data-lucide="ban" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-900 mt-2" id="comp-kpi-suppressions">0</h3>
+                        <p class="text-[11px] text-rose-600 font-medium mt-1 flex items-center gap-1">
+                            <i data-lucide="slash" class="w-3 h-3"></i> Auto-blocked from all sends
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500">Blocked Dispatches</span>
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-900 mt-2" id="comp-kpi-blocked">0</h3>
+                        <p class="text-[11px] text-amber-600 font-medium mt-1 flex items-center gap-1">
+                            <i data-lucide="alert-triangle" class="w-3 h-3"></i> Pre-wire compliance blocks
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500">Approved Dispatches</span>
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-900 mt-2" id="comp-kpi-approved">0</h3>
+                        <p class="text-[11px] text-blue-600 font-medium mt-1 flex items-center gap-1">
+                            <i data-lucide="check-check" class="w-3 h-3"></i> Verified 100% compliant sends
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sub-Navigation Tabs inside Compliance -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="flex border-b border-slate-200 bg-slate-50/50 px-4 gap-2">
+                        <button onclick="switchComplianceSubTab('consents')" id="comp-subtab-btn-consents" class="comp-subtab-btn py-3 px-3 border-b-2 border-blue-600 text-blue-600 font-bold text-xs flex items-center gap-1.5">
+                            <i data-lucide="file-check" class="w-4 h-4"></i>
+                            <span>Consent Registry</span>
+                        </button>
+                        <button onclick="switchComplianceSubTab('suppressions')" id="comp-subtab-btn-suppressions" class="comp-subtab-btn py-3 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-semibold text-xs flex items-center gap-1.5">
+                            <i data-lucide="user-x" class="w-4 h-4"></i>
+                            <span>Suppression List</span>
+                        </button>
+                        <button onclick="switchComplianceSubTab('audit')" id="comp-subtab-btn-audit" class="comp-subtab-btn py-3 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-semibold text-xs flex items-center gap-1.5">
+                            <i data-lucide="history" class="w-4 h-4"></i>
+                            <span>Audit Logs</span>
+                        </button>
+                        <button onclick="switchComplianceSubTab('settings')" id="comp-subtab-btn-settings" class="comp-subtab-btn py-3 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-semibold text-xs flex items-center gap-1.5">
+                            <i data-lucide="settings" class="w-4 h-4"></i>
+                            <span>Guard Policies & Keywords</span>
+                        </button>
+                    </div>
+
+                    <!-- SUBTAB 1: CONSENTS REGISTRY -->
+                    <div id="comp-subview-consents" class="comp-subview p-4 space-y-4">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <input type="text" id="comp-consent-search" oninput="filterConsentsTable()" placeholder="Filter by phone or name..." class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-64">
+                                <select id="comp-consent-purpose-filter" onchange="loadConsentsRegistry()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700">
+                                    <option value="">All Purposes</option>
+                                    <option value="MARKETING">Marketing</option>
+                                    <option value="TRANSACTIONAL">Transactional</option>
+                                    <option value="CUSTOMER_SERVICE">Customer Service</option>
+                                </select>
+                                <select id="comp-consent-status-filter" onchange="loadConsentsRegistry()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700">
+                                    <option value="">All Statuses</option>
+                                    <option value="OPTED_IN">OPTED_IN</option>
+                                    <option value="REVOKED">REVOKED</option>
+                                    <option value="EXPIRED">EXPIRED</option>
+                                    <option value="PENDING_CONFIRMATION">PENDING</option>
+                                </select>
+                            </div>
+                            <span class="text-xs text-slate-400 font-medium" id="comp-consents-total-label">Showing consents...</span>
+                        </div>
+
+                        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Contact Phone</th>
+                                        <th class="py-2.5 px-3">Lead Name</th>
+                                        <th class="py-2.5 px-3">Purpose</th>
+                                        <th class="py-2.5 px-3">Status</th>
+                                        <th class="py-2.5 px-3">Source & Method</th>
+                                        <th class="py-2.5 px-3">Evidence</th>
+                                        <th class="py-2.5 px-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comp-consents-tbody" class="divide-y divide-slate-100">
+                                    <tr><td colspan="7" class="text-center py-6 text-slate-400">Loading consents registry...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SUBTAB 2: SUPPRESSION LIST -->
+                    <div id="comp-subview-suppressions" class="comp-subview hidden p-4 space-y-4">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <input type="text" id="comp-suppression-search" oninput="loadSuppressionsList()" placeholder="Search suppressed phone or reason..." class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-64">
+                            </div>
+                            <span class="text-xs text-slate-400 font-medium" id="comp-suppressions-total-label">Suppression list</span>
+                        </div>
+
+                        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Phone Number</th>
+                                        <th class="py-2.5 px-3">Suppression Reason</th>
+                                        <th class="py-2.5 px-3">Scope</th>
+                                        <th class="py-2.5 px-3">Suppressed By</th>
+                                        <th class="py-2.5 px-3">Date Suppressed</th>
+                                        <th class="py-2.5 px-3">Evidence / Note</th>
+                                        <th class="py-2.5 px-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comp-suppressions-tbody" class="divide-y divide-slate-100">
+                                    <tr><td colspan="7" class="text-center py-6 text-slate-400">Loading suppression list...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SUBTAB 3: COMPLIANCE AUDIT LOGS -->
+                    <div id="comp-subview-audit" class="comp-subview hidden p-4 space-y-4">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <input type="text" id="comp-audit-search" oninput="loadAuditLogs()" placeholder="Search audit logs..." class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-64">
+                                <select id="comp-audit-action-filter" onchange="loadAuditLogs()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700">
+                                    <option value="">All Actions</option>
+                                    <option value="DISPATCH_APPROVED">DISPATCH_APPROVED</option>
+                                    <option value="DISPATCH_BLOCKED">DISPATCH_BLOCKED</option>
+                                    <option value="CONSENT_CAPTURED">CONSENT_CAPTURED</option>
+                                    <option value="CONSENT_REVOKED">CONSENT_REVOKED</option>
+                                    <option value="SUPPRESSION_ADDED">SUPPRESSION_ADDED</option>
+                                </select>
+                            </div>
+                            <button onclick="loadAuditLogs()" class="text-xs text-blue-600 font-semibold flex items-center gap-1 hover:underline">
+                                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Refresh Audit Feed
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Timestamp</th>
+                                        <th class="py-2.5 px-3">Action</th>
+                                        <th class="py-2.5 px-3">Entity / Phone</th>
+                                        <th class="py-2.5 px-3">Actor & Role</th>
+                                        <th class="py-2.5 px-3">Status</th>
+                                        <th class="py-2.5 px-3">Policy Audit Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comp-audit-tbody" class="divide-y divide-slate-100">
+                                    <tr><td colspan="6" class="text-center py-6 text-slate-400">Loading audit log stream...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SUBTAB 4: GUARD POLICIES & SETTINGS -->
+                    <div id="comp-subview-settings" class="comp-subview hidden p-6 space-y-6">
+                        <form onsubmit="handleSaveComplianceSettings(event)" class="max-w-2xl space-y-5 text-xs">
+                            <div class="space-y-1">
+                                <h3 class="text-sm font-bold text-slate-900">Tenant WhatsApp Policy Configuration</h3>
+                                <p class="text-slate-500">Configure global opt-out keywords, business identity, and conversation window rules.</p>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-700">Clear Business Identity (Brand Name)</label>
+                                <input type="text" id="comp-settings-business-name" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800" placeholder="e.g. Jai Shree Krishna products and services">
+                                <p class="text-[10px] text-slate-400">WhatsApp Business policy requires marketing templates to clearly identify the registered entity.</p>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-700">Opt-Out Keywords (Comma-Separated)</label>
+                                <textarea id="comp-settings-keywords" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800" placeholder="STOP, UNSUBSCRIBE, CANCEL, QUIT, END, OPTOUT, ROKO, BAND KARO"></textarea>
+                                <p class="text-[10px] text-slate-400">Inbound messages containing any of these keywords immediately trigger global suppression and marketing cancellation.</p>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="block font-bold text-slate-700">Mandatory Opt-Out Footer Language (Auto-Appended to Outbound Messages)</label>
+                                <input type="text" id="comp-settings-footer" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800" placeholder="Reply STOP to unsubscribe.">
+                                <p class="text-[10px] text-emerald-700 font-medium">✓ Automatically appended to every outgoing marketing/campaign/automation WhatsApp message so recipients can reply STOP to unsubscribe.</p>
+                            </div>
+
+                            <div class="space-y-3 pt-2 border-t border-slate-100">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="comp-settings-enforce-consent" class="w-4 h-4 rounded text-blue-600" checked>
+                                        <label for="comp-settings-enforce-consent" class="font-bold text-slate-800">Require Explicit Affirmative Consent Record for Marketing Sends</label>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 pl-6">When active, contacts without an OPTED_IN record in the Consent Registry are blocked from marketing broadcasts. Suppressed/STOP contacts are always blocked regardless of this toggle.</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="comp-settings-enforce-24h" class="w-4 h-4 rounded text-blue-600">
+                                        <label for="comp-settings-enforce-24h" class="font-bold text-slate-800">Strictly Enforce 24-Hour Messaging Window on Meta Cloud API</label>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 pl-6">When active, freeform marketing is strictly blocked outside 24h of customer inbound. Only approved HSM templates are permitted.</p>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 flex justify-end">
+                                <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-sm transition-all">
+                                    Save Guard Policy Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ================= MODALS & DRAWERS ================= -->
+
+    <!-- LEAD 360° DRAWER / PROFILE MODAL -->
+    <div id="lead-drawer" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden flex justify-end">
+        <div class="w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col justify-between transform transition-all">
+            <!-- Drawer Header -->
+            <div class="p-6 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow" id="drawer-avatar">
+                        RS
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900" id="drawer-name">Lead Name</h3>
+                        <p class="text-xs text-slate-500" id="drawer-sub">Company &bull; Phone</p>
+                    </div>
+                </div>
+                <button onclick="closeLeadDrawer()" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Drawer Tabs -->
+            <div class="flex border-b border-slate-200 px-6 bg-white gap-4 text-xs font-semibold text-slate-500">
+                <button onclick="switchDrawerTab('chat')" id="drawer-tab-chat" class="py-3 border-b-2 border-emerald-600 text-emerald-600 font-bold flex items-center gap-1.5">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i> WhatsApp Chat
+                </button>
+                <button onclick="switchDrawerTab('timeline')" id="drawer-tab-timeline" class="py-3 border-b-2 border-transparent hover:text-slate-800 flex items-center gap-1.5">
+                    <i data-lucide="clock" class="w-3.5 h-3.5"></i> Activity Timeline
+                </button>
+                <button onclick="switchDrawerTab('details')" id="drawer-tab-details" class="py-3 border-b-2 border-transparent hover:text-slate-800 flex items-center gap-1.5">
+                    <i data-lucide="info" class="w-3.5 h-3.5"></i> Lead Details & Stage
+                </button>
+            </div>
+
+            <!-- Drawer Body -->
+            <div class="flex-1 p-6 overflow-y-auto">
+                <!-- TAB 1: WHATSAPP LIVE CONVERSATION -->
+                <div id="drawer-view-chat" class="space-y-4 flex flex-col h-full justify-between">
+                    <div id="drawer-chat-messages" class="space-y-3 overflow-y-auto max-h-[380px] p-2 bg-slate-50 rounded-xl border border-slate-200 min-h-[220px]">
+                        <p class="text-xs text-slate-400 text-center py-6">No WhatsApp messages yet.</p>
+                    </div>
+
+                    <!-- Chat Sender Box -->
+                    <div class="space-y-2 pt-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <select id="drawer-chat-template" onchange="applyDrawerTemplate(this.value)" class="flex-1 text-xs bg-slate-100 border-none rounded-lg px-2.5 py-1.5 text-slate-700">
+                                <option value="">-- Choose Template to Insert --</option>
+                            </select>
+                            
+                            <input type="file" id="drawer-media-input" accept="image/*,video/mp4,video/*" class="hidden" onchange="handleMediaUpload(this, 'drawer')">
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="triggerMediaPicker('drawer', 'image')" title="Attach Image" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1 text-xs font-semibold">
+                                    <i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i>
+                                    <span>Image</span>
+                                </button>
+                                <button type="button" onclick="triggerMediaPicker('drawer', 'video')" title="Attach Video" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1 text-xs font-semibold">
+                                    <i data-lucide="video" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    <span>Video</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Media preview chip in drawer -->
+                        <div id="drawer-media-preview" class="hidden flex items-center justify-between text-xs bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-lg border border-emerald-200">
+                            <div class="flex items-center gap-1.5 truncate">
+                                <i id="drawer-media-icon" data-lucide="paperclip" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                                <span id="drawer-media-name" class="font-medium truncate">media</span>
+                            </div>
+                            <button type="button" onclick="clearMedia('drawer')" class="text-rose-500 hover:text-rose-700 font-bold ml-2">&times;</button>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <textarea id="drawer-chat-input" rows="2" placeholder="Type WhatsApp message or video caption..." class="flex-1 bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                            <button onclick="sendDrawerWhatsApp()" class="px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center shrink-0 shadow">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: ACTIVITY TIMELINE -->
+                <div id="drawer-view-timeline" class="hidden space-y-4">
+                    <!-- Add Note Input -->
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Log Note or Call</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="drawer-note-input" placeholder="e.g. Spoke to client, asked for discount quote..." class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800">
+                            <button onclick="saveLeadNote()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold">Add Note</button>
+                        </div>
+                    </div>
+
+                    <div id="drawer-timeline-list" class="space-y-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 3: LEAD DETAILS & STAGE CHANGER -->
+                <div id="drawer-view-details" class="hidden space-y-4 text-xs">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Stage</label>
+                            <select id="drawer-edit-stage" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-medium">
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Qualified">Qualified</option>
+                                <option value="Proposal Sent">Proposal Sent</option>
+                                <option value="Won">Closed Won</option>
+                                <option value="Lost">Lost</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Priority</label>
+                            <select id="drawer-edit-priority" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-medium">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Email</label>
+                            <input type="email" id="drawer-edit-email" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Phone</label>
+                            <input type="text" id="drawer-edit-phone" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Company</label>
+                            <input type="text" id="drawer-edit-company" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-600 mb-1">Lead Score</label>
+                            <input type="number" id="drawer-edit-score" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 font-bold text-blue-600">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-600 mb-1">Internal Notes</label>
+                        <textarea id="drawer-edit-notes" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2"></textarea>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+                        <button onclick="deleteCurrentLead()" class="text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Lead
+                        </button>
+                        <button onclick="saveLeadDetails()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD LEAD -->
+    <div id="modal-add-lead" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 class="text-base font-bold text-slate-900">Add New Lead</h3>
+                <button onclick="closeAddLeadModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form onsubmit="handleCreateLead(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">First Name *</label>
+                        <input type="text" id="add-lead-first" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Last Name</label>
+                        <input type="text" id="add-lead-last" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Phone (WhatsApp) *</label>
+                        <input type="text" id="add-lead-phone" required placeholder="e.g. 9876543210" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Email</label>
+                        <input type="email" id="add-lead-email" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Company</label>
+                        <input type="text" id="add-lead-company" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Source</label>
+                        <select id="add-lead-source" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                            <option value="Website">Website</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Referral">Referral</option>
+                            <option value="Ad Campaign">Ad Campaign</option>
+                            <option value="Manual Entry">Manual Entry</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Stage</label>
+                        <select id="add-lead-stage" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Qualified">Qualified</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Priority</label>
+                        <select id="add-lead-priority" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Notes</label>
+                    <textarea id="add-lead-notes" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2"></textarea>
+                </div>
+
+                <!-- Affirmative WhatsApp Consent Capture -->
+                <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
+                    <div class="flex items-start gap-2.5">
+                        <input type="checkbox" id="add-lead-consent" class="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500">
+                        <label for="add-lead-consent" class="text-[11px] text-slate-800 leading-snug cursor-pointer">
+                            <span class="font-bold text-emerald-900">Record Affirmative WhatsApp Consent (OPTED_IN)</span>
+                            <span class="block text-[10px] text-slate-500 mt-0.5">Lead has explicitly agreed to receive WhatsApp messages from our business. Can revoke anytime by replying STOP.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeAddLeadModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Save Lead</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD TEMPLATE -->
+    <div id="modal-add-template" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 class="text-base font-bold text-slate-900">Create Message Template</h3>
+                <button onclick="closeAddTemplateModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form onsubmit="handleCreateTemplate(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Template Name *</label>
+                    <input type="text" id="tpl-name" required placeholder="e.g. Product Demo Follow-up" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Category</label>
+                    <select id="tpl-category" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        <option value="Welcome">Welcome</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Offer">Offer</option>
+                        <option value="Payment">Payment</option>
+                    </select>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block font-bold text-slate-700">Message Content *</label>
+                        <div class="flex gap-1 text-[10px] text-blue-600">
+                            <button type="button" onclick="insertVariable('tpl-content', '{{first_name}}')" class="bg-blue-50 px-1 py-0.5 rounded">{{first_name}}</button>
+                            <button type="button" onclick="insertVariable('tpl-content', '{{company}}')" class="bg-blue-50 px-1 py-0.5 rounded">{{company}}</button>
+                        </div>
+                    </div>
+                    <textarea id="tpl-content" required rows="4" placeholder="Hello {{first_name}}, thank you for your interest in..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeAddTemplateModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Save Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD AUTOMATION -->
+    <div id="modal-add-automation" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 class="text-base font-bold text-slate-900">New Automation Rule</h3>
+                <button onclick="closeAddAutomationModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form onsubmit="handleCreateAutomation(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Workflow Name *</label>
+                    <input type="text" id="auto-name" required placeholder="e.g. Send Welcome on Website Lead" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Trigger Event *</label>
+                    <select id="auto-trigger-type" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        <option value="ON_LEAD_CREATED">When New Lead is Created</option>
+                        <option value="ON_STAGE_CHANGED">When Lead Stage Changes</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Condition (Target Stage)</label>
+                    <select id="auto-condition" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        <option value="*">Any / All Leads (*)</option>
+                        <option value="New">Stage is 'New'</option>
+                        <option value="Qualified">Stage is 'Qualified'</option>
+                        <option value="Proposal Sent">Stage is 'Proposal Sent'</option>
+                        <option value="Won">Stage is 'Closed Won'</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Action: Send WhatsApp Template *</label>
+                    <select id="auto-template-id" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        <!-- Loaded dynamically -->
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeAddAutomationModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold">Create Workflow</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CAMPAIGN PREFLIGHT INSPECTION -->
+    <div id="modal-preflight" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Campaign Compliance Preflight Inspection</h3>
+                        <p class="text-[11px] text-slate-500">Eligibility check against consent, suppression, 24h window, and template rules.</p>
+                    </div>
+                </div>
+                <button onclick="closePreflightModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="overflow-y-auto space-y-4 flex-1 pr-1 text-xs" id="preflight-modal-content">
+                <!-- Populated dynamically by JS -->
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+                <p class="text-[10px] text-slate-400 italic">Preflight evaluates server compliance rules before queueing.</p>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closePreflightModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-semibold">Close</button>
+                    <button type="button" onclick="proceedFromPreflightToLaunch()" id="btn-preflight-proceed" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm">Proceed & Dispatch</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AFFIRMATIVE CONSENT CAPTURE -->
+    <div id="modal-capture-consent" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Capture Affirmative WhatsApp Consent</h3>
+                    <p class="text-[11px] text-slate-500">Verifiable consent capture complying with Meta WhatsApp Business policies.</p>
+                </div>
+                <button onclick="closeCaptureConsentModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <!-- Business Identity Display -->
+            <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl space-y-1">
+                <div class="flex items-center gap-1.5 text-blue-900 font-bold text-xs">
+                    <i data-lucide="building" class="w-3.5 h-3.5 text-blue-600"></i>
+                    <span>Authorized Business Entity:</span>
+                </div>
+                <p class="text-xs text-blue-800 font-semibold" id="consent-modal-biz-name">Jai Shree Krishna products and services</p>
+                <p class="text-[10px] text-blue-600">Consent is bound to this registered business and purpose.</p>
+            </div>
+
+            <form onsubmit="handleCaptureConsentSubmit(event)" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Contact Phone Number *</label>
+                    <input type="text" id="consent-phone" required placeholder="e.g. 919876543210 or 9876543210" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Communication Category / Purpose *</label>
+                    <select id="consent-purpose" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                        <option value="MARKETING" selected>MARKETING (Promotions, Discounts, Newsletters)</option>
+                        <option value="TRANSACTIONAL">TRANSACTIONAL (Order Status, Account Alerts)</option>
+                        <option value="CUSTOMER_SERVICE">CUSTOMER_SERVICE (1-on-1 Support, Inquiries)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Collection Method *</label>
+                    <select id="consent-method" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                        <option value="WEB_FORM" selected>WEB_FORM (Online Opt-in Form)</option>
+                        <option value="INBOUND_MESSAGE">INBOUND_MESSAGE (Customer initiated WhatsApp message)</option>
+                        <option value="CRM_IMPORT">CRM_IMPORT (Verified prior contract)</option>
+                        <option value="API">API (Automated programmatic grant)</option>
+                        <option value="VERBAL">VERBAL (Recorded call authorization)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Verifiable Consent Evidence *</label>
+                    <textarea id="consent-evidence" required rows="2" placeholder="e.g. Web form submission #8914, IP 103.21.54.2, timestamped 2026-10-12" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></textarea>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Required: Inferred consent is strictly prohibited. Provide audit trail reference.</p>
+                </div>
+
+                <!-- MANDATORY UNCHECKED AFFIRMATIVE ACTION CHECKBOX -->
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1.5">
+                    <div class="flex items-start gap-2">
+                        <input type="checkbox" id="consent-affirmative-check" required class="w-4 h-4 mt-0.5 text-blue-600 rounded">
+                        <label for="consent-affirmative-check" class="text-xs font-bold text-amber-900 leading-snug">
+                            I verify that the contact performed an affirmative, voluntary opt-in action to receive WhatsApp messages. This checkbox was NOT pre-selected.
+                        </label>
+                    </div>
+                    <p class="text-[10px] text-amber-700 pl-6">
+                        By submitting, you certify compliance with the <a href="https://example.com/privacy" target="_blank" class="underline font-bold">Privacy Policy</a> and WhatsApp Messaging Guidelines.
+                    </p>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeCaptureConsentModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-sm">Save Affirmative Consent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD SUPPRESSION -->
+    <div id="modal-add-suppression" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 class="text-base font-bold text-slate-900">Add Number to Suppression List</h3>
+                <button onclick="closeAddSuppressionModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form onsubmit="handleAddSuppressionSubmit(event)" class="space-y-3.5 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Phone Number *</label>
+                    <input type="text" id="suppress-phone" required placeholder="e.g. 919876543210" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Suppression Scope *</label>
+                    <select id="suppress-scope" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                        <option value="GLOBAL" selected>GLOBAL (Block all campaigns, workflows & agent messages)</option>
+                        <option value="MARKETING">MARKETING (Block only marketing campaigns)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Reason *</label>
+                    <select id="suppress-reason" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800">
+                        <option value="USER_OPT_OUT" selected>User Requested Opt-Out</option>
+                        <option value="KEYWORD_STOP">Inbound STOP Keyword</option>
+                        <option value="SPAM_COMPLAINT">Spam / Abuse Complaint</option>
+                        <option value="HARD_BOUNCE">Invalid Number / Hard Bounce</option>
+                        <option value="LEGAL_REQUEST">Legal / Regulatory Compliance Request</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Evidence / Note</label>
+                    <textarea id="suppress-evidence" rows="2" placeholder="e.g. Customer called support desk requesting total unsubscribe" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeAddSuppressionModal()" class="px-4 py-2 border border-slate-200 text-slate-600 rounded-lg">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold shadow-sm">Add to Suppression List</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CONTACT CONSENT AUDIT HISTORY -->
+    <div id="modal-consent-history" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>Contact Compliance History</span>
+                        <span id="history-phone-badge" class="font-mono text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">...</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-500">Immutable audit log of all consent grants, updates, and revocations.</p>
+                </div>
+                <button onclick="closeConsentHistoryModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="overflow-y-auto space-y-3 flex-1 pr-1 text-xs" id="history-timeline-container">
+                <!-- Timeline items loaded dynamically -->
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-slate-200">
+                <button type="button" onclick="closeConsentHistoryModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

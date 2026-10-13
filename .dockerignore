@@ -1,0 +1,13 @@
+node_modules
+.git
+.gitignore
+.wwebjs_auth
+.wwebjs_cache
+OpenWA
+*.db
+*.db-shm
+*.db-wal
+*.log
+uploads
+.env
+.vercel

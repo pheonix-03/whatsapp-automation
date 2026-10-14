@@ -537,6 +537,13 @@ class CampaignManager {
                             VALUES (?, ?, ?, ?, ?, ?, 'OUTGOING', 'BLOCKED_COMPLIANCE', ?)
                         `, [tenantId, r.lead_id || null, r.phone, personalizedMsg, campaign.media_path || '', category, compliance.message]);
                     } catch (e) {}
+
+                    totalAttempts++;
+                    await db.run(`
+                        UPDATE campaigns 
+                        SET sent_count = ?, failed_count = ?, error_message = ?, current_batch = ?, updated_at = CURRENT_TIMESTAMP 
+                        WHERE id = ?
+                    `, [sentCount, failedCount, compliance.message, currentBatchNum, campaignId]);
                     continue;
                 }
 
@@ -645,9 +652,9 @@ class CampaignManager {
 
                 await db.run(`
                     UPDATE campaigns 
-                    SET status = ?, cooldown_until = NULL, updated_at = CURRENT_TIMESTAMP 
+                    SET status = ?, sent_count = ?, failed_count = ?, cooldown_until = NULL, updated_at = CURRENT_TIMESTAMP 
                     WHERE id = ?
-                `, [finalStatus, campaignId]);
+                `, [finalStatus, sentCount, failedCount, campaignId]);
                 this.activeDispatchers.delete(campaignId);
                 console.log(`[Campaign #${campaignId}] Finished with status: ${finalStatus}.`);
             }

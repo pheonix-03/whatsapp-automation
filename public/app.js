@@ -1402,6 +1402,7 @@ async function loadCampaigns() {
                     </td>
                     <td class="py-2.5 px-4">
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusColor}">${statusLabel}</span>
+                        ${c.error_message ? `<div class="text-[9px] text-rose-600 font-medium max-w-[180px] leading-tight mt-0.5" title="${c.error_message}">${c.error_message.length > 50 ? c.error_message.substring(0, 48) + '...' : c.error_message}</div>` : ''}
                         ${cooldownBadge}
                     </td>
                     <td class="py-2.5 px-4 text-slate-500 whitespace-nowrap">${time} ${retryBtn}</td>

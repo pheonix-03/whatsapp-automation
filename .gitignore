@@ -36,3 +36,5 @@ openwa_err.log
 .DS_Store
 Thumbs.db
 .vercel
+*.exe
+dist/

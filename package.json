@@ -8,9 +8,15 @@
   },
   "scripts": {
     "start": "node server.js",
+    "app": "electron electron-main.js",
     "test": "node --test --test-concurrency=1 tests/**/*.test.js"
   },
-  "keywords": ["crm", "whatsapp", "leadsquared", "compliance"],
+  "keywords": [
+    "crm",
+    "whatsapp",
+    "leadsquared",
+    "compliance"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -22,5 +28,8 @@
     "qrcode": "^1.5.4",
     "sqlite3": "^6.0.1",
     "whatsapp-web.js": "^1.34.7"
+  },
+  "devDependencies": {
+    "electron": "^44.7.2"
   }
 }

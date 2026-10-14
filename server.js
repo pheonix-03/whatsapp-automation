@@ -1446,7 +1446,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Start Server (skip app.listen when imported by Vercel serverless runtime)
-if (!process.env.VERCEL && require.main === module) {
+if (!process.env.VERCEL && (require.main === module || process.env.ELECTRON_RUN === 'true')) {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`====================================================`);
         console.log(`🚀 LeadSquared Clone CRM with WhatsApp Automation`);

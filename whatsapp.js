@@ -75,9 +75,12 @@ class WhatsAppService {
                     }
                 } else if (sess.status === 'ready' || sess.status === 'connected') {
                     this.openwaQr = null;
-                } else if (sess.status === 'created') {
-                    // Auto-start session so QR is generated
-                    await openwa.startSession().catch(() => {});
+                } else if (sess.status === 'created' || sess.status === 'failed' || sess.status === 'stopped' || sess.status === 'closed') {
+                    // Auto-start session so QR or existing auth is restored
+                    if (!this._openwaRestartAttempt || Date.now() - this._openwaRestartAttempt > 10000) {
+                        this._openwaRestartAttempt = Date.now();
+                        await openwa.startSession().catch(() => {});
+                    }
                 }
             }
         } catch (e) {}
@@ -91,7 +94,7 @@ class WhatsAppService {
 
         if (openwa.config && openwa.config.enabled) {
             activeEngine = 'OPENWA_GATEWAY';
-            const owaStatus = this.openwaSessionStatus || 'SCAN_QR';
+            const owaStatus = this.openwaSessionStatus || 'INITIALIZING';
             if (owaStatus === 'ready' || owaStatus === 'connected') {
                 currentStatus = 'CONNECTED';
                 userInfo = this.openwaUserInfo || { number: 'OpenWA', pushname: 'Connected' };
@@ -100,12 +103,16 @@ class WhatsAppService {
                 currentStatus = 'SCAN_QR';
                 qrDataUrl = this.openwaQr;
                 userInfo = null;
-            } else if (owaStatus === 'starting') {
+            } else if (owaStatus === 'starting' || owaStatus === 'initializing') {
                 currentStatus = 'INITIALIZING';
                 qrDataUrl = null;
                 userInfo = null;
+            } else if (owaStatus === 'failed') {
+                currentStatus = 'FAILED';
+                qrDataUrl = null;
+                userInfo = null;
             } else {
-                currentStatus = 'SCAN_QR';
+                currentStatus = this.openwaQr ? 'SCAN_QR' : 'INITIALIZING';
                 qrDataUrl = this.openwaQr;
                 userInfo = null;
             }

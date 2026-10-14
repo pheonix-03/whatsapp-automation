@@ -449,17 +449,53 @@ class OpenWAService {
     async forceResetSession() {
         await this.loadConfig();
         const resolvedSession = await this.resolveSessionId(this.config.sessionId);
+        
+        // 1. Unlink companion device from WhatsApp servers
         try {
-            await fetch(`${this.config.serverUrl}/sessions/${resolvedSession}/force-kill`, {
+            await fetch(`${this.config.serverUrl}/sessions/${resolvedSession}/logout`, {
                 method: 'POST',
-                headers: this.getHeaders()
+                headers: this.getHeaders(),
+                signal: AbortSignal.timeout(6000)
+            });
+            console.log(`[OpenWA] Successfully logged out session: ${resolvedSession}`);
+        } catch (e) {
+            console.warn('[OpenWA] Graceful logout note:', e.message);
+        }
+
+        // 2. Stop and force-kill any lingering engine processes
+        try {
+            await fetch(`${this.config.serverUrl}/sessions/${resolvedSession}/stop`, {
+                method: 'POST',
+                headers: this.getHeaders(),
+                signal: AbortSignal.timeout(4000)
             });
         } catch (e) {}
 
+        try {
+            await fetch(`${this.config.serverUrl}/sessions/${resolvedSession}/force-kill`, {
+                method: 'POST',
+                headers: this.getHeaders(),
+                signal: AbortSignal.timeout(4000)
+            });
+        } catch (e) {}
+
+        // 3. Clear disk locks & browser process remnants
         const cleanPuppeteer = require('./clean_puppeteer');
         if (typeof cleanPuppeteer === 'function') {
             try { cleanPuppeteer(); } catch (e) {}
         }
+
+        // 4. Wipe physical on-disk session directories if present
+        try {
+            const sessionDir = path.join(__dirname, 'OpenWA', 'data', 'sessions', `session-${resolvedSession}`);
+            if (fs.existsSync(sessionDir)) {
+                fs.rmSync(sessionDir, { recursive: true, force: true });
+            }
+            const baileysDir = path.join(__dirname, 'OpenWA', 'data', 'baileys', `session-${resolvedSession}`);
+            if (fs.existsSync(baileysDir)) {
+                fs.rmSync(baileysDir, { recursive: true, force: true });
+            }
+        } catch (e) {}
 
         await new Promise(r => setTimeout(r, 1200));
         return await this.startSession();

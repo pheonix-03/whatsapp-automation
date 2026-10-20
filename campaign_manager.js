@@ -403,7 +403,7 @@ class CampaignManager {
         const result = await db.run(`
             UPDATE campaign_recipients 
             SET status = 'PENDING', error_message = '' 
-            WHERE campaign_id = ? AND status = 'FAILED'
+            WHERE campaign_id = ? AND (status = 'FAILED' OR status = 'BLOCKED_COMPLIANCE')
         `, [id]);
 
         if (result.changes === 0) {
